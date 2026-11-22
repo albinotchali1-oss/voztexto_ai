@@ -134,7 +134,7 @@ class _BrandHeader extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           child: const Text(
-            'PRIMEIRA VERSÃO',
+            'TCHALI',
             style: TextStyle(
               color: AppColors.teal,
               fontSize: 9,
