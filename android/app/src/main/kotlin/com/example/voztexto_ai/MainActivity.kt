@@ -93,13 +93,27 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun getDocumentName(uri: Uri): String? {
-        contentResolver.query(uri, arrayOf(DocumentsContract.Document.COLUMN_DISPLAY_NAME), null, null, null)
-            ?.use { cursor ->
+        try {
+            val documentId = DocumentsContract.getTreeDocumentId(uri)
+            val documentUri = DocumentsContract.buildDocumentUriUsingTree(uri, documentId)
+
+            contentResolver.query(
+                documentUri,
+                arrayOf(DocumentsContract.Document.COLUMN_DISPLAY_NAME),
+                null,
+                null,
+                null,
+            )?.use { cursor ->
                 if (cursor.moveToFirst()) {
-                    val nameIndex = cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DISPLAY_NAME)
+                    val nameIndex = cursor.getColumnIndex(
+                        DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+                    )
                     if (nameIndex >= 0) return cursor.getString(nameIndex)
                 }
             }
+        } catch (_: Exception) {
+            return null
+        }
         return null
     }
 
@@ -125,10 +139,15 @@ class MainActivity : FlutterActivity() {
                 val uri = data?.data
                 if (uri != null) {
                     try {
-                        val takeFlags = (data.flags
-                            and (Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                or Intent.FLAG_GRANT_WRITE_URI_PERMISSION))
+                        val takeFlags = (
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                            )
                         contentResolver.takePersistableUriPermission(uri, takeFlags)
+                        getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE)
+                            .edit()
+                            .putString("flutter.converter_output_directory", uri.toString())
+                            .apply()
                         result?.success(uri.toString())
                     } catch (_: Exception) {
                         result?.error("PERMISSION_ERROR", "Não foi possível manter acesso à pasta", null)

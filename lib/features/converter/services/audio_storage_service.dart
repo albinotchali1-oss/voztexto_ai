@@ -10,13 +10,13 @@ class StoredAudio {
     required this.fileName,
     required this.ffmpegPath,
     required this.documentUri,
-    required this.folderName,
+    required this.filePath,
   });
 
   final String fileName;
   final String ffmpegPath;
   final String? documentUri;
-  final String folderName;
+  final String filePath;
 }
 
 class AudioStorageService {
@@ -34,8 +34,13 @@ class AudioStorageService {
 
   Future<void> loadSavedDirectory() async {
     final preferences = await SharedPreferences.getInstance();
-    _directoryUri = preferences.getString(_directoryPreference);
-    _directoryPath = preferences.getString(_directoryPreference);
+    if (Platform.isAndroid) {
+      _directoryUri = preferences.getString(_directoryPreference);
+      _directoryPath = null;
+    } else {
+      _directoryPath = preferences.getString(_directoryPreference);
+      _directoryUri = null;
+    }
     _directoryName = preferences.getString(_directoryNamePreference);
   }
 
@@ -102,7 +107,7 @@ class AudioStorageService {
         fileName: fileName,
         ffmpegPath: outputPath,
         documentUri: documentUri,
-        folderName: _directoryName ?? 'Pasta selecionada',
+        filePath: documentUri,
       );
     }
 
@@ -116,7 +121,7 @@ class AudioStorageService {
       fileName: fileName,
       ffmpegPath: '${directory.path}${Platform.pathSeparator}$fileName',
       documentUri: null,
-      folderName: _directoryName ?? directory.path,
+      filePath: '${directory.path}${Platform.pathSeparator}$fileName',
     );
   }
 

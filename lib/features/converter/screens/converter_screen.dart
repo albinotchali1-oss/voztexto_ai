@@ -326,15 +326,6 @@ class _ConverterScreenState extends State<ConverterScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(audio.fileName),
-                        Text(
-                          'Salvo em: ${audio.folderName}',
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: AppColors.muted,
-                            fontSize: 12,
-                          ),
-                        ),
                         const SizedBox(height: 10),
                         OutlinedButton.icon(
                           onPressed: _openAudio,

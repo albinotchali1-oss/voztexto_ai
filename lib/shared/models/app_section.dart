@@ -31,7 +31,7 @@ enum AppSection {
         AppSection.converter =>
           'A conversão de arquivos ainda não está disponível nesta versão.',
         AppSection.transcription =>
-          'A transcrição de áudio ainda não está disponível nesta versão.',
+          'Transcreva áudio online utilizando Groq Whisper Large V3 Turbo.',
         AppSection.translation =>
           'A tradução de textos ainda não está disponível nesta versão.',
         AppSection.history =>
