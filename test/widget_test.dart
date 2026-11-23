@@ -28,35 +28,26 @@ void main() {
     expect(button.onPressed, isNull);
   });
 
-  testWidgets('navega entre todas as secções sem simular funcionalidades', (
+  testWidgets('abre o conversor com seleção por galeria ou arquivos', (
     tester,
   ) async {
     await tester.pumpWidget(const VozTextoApp());
+    await tester.tap(
+      find.descendant(
+        of: find.byType(NavigationBar),
+        matching: find.text('Conversor'),
+      ),
+    );
+    await tester.pumpAndSettle();
 
-    const destinations = {
-      'Conversor':
-          'A conversão de arquivos ainda não está disponível nesta versão.',
-      'Transcrição':
-          'A transcrição de áudio ainda não está disponível nesta versão.',
-      'Tradução':
-          'A tradução de textos ainda não está disponível nesta versão.',
-      'Histórico':
-          'O histórico estará disponível quando as ferramentas forem implementadas.',
-    };
+    expect(find.text('Vídeo para áudio'), findsOneWidget);
+    expect(find.text('Selecionar vídeo MP4'), findsOneWidget);
+    expect(find.textContaining('não é enviado'), findsOneWidget);
 
-    for (final entry in destinations.entries) {
-      await tester.tap(
-        find.descendant(
-          of: find.byType(NavigationBar),
-          matching: find.text(entry.key),
-        ),
-      );
-      await tester.pumpAndSettle();
-      expect(find.text(entry.value), findsOneWidget);
-      expect(
-        find.text('Nenhuma operação é executada nesta versão.'),
-        findsOneWidget,
-      );
-    }
+    await tester.tap(find.text('Selecionar vídeo MP4'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Galeria'), findsOneWidget);
+    expect(find.text('Arquivos'), findsOneWidget);
   });
 }

@@ -1,7 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../core/constants/app_colors.dart';
-import '../features/converter/presentation/converter_page.dart';
+import '../features/converter/screens/converter_screen.dart';
 import '../features/history/presentation/history_page.dart';
 import '../features/home/presentation/home_page.dart';
 import '../features/transcription/presentation/transcription_page.dart';
@@ -23,7 +23,7 @@ class _MainNavigationState extends State<MainNavigation> {
 
   late final List<Widget> _pages = [
     HomePage(onOpenSection: _openSection),
-    const ConverterPage(),
+    const ConverterScreen(),
     const TranscriptionPage(),
     const TranslationPage(),
     const HistoryPage(),

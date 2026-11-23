@@ -24,6 +24,22 @@ class MainActivity : FlutterActivity() {
             .setMethodCallHandler { call, result ->
                 when (call.method) {
                     "pickOutputDirectory" -> pickOutputDirectory(result)
+                    "getDirectoryName" -> {
+                        val uri = call.argument<String>("uri")
+                        if (uri.isNullOrBlank()) {
+                            result.error("INVALID_URI", "Pasta inválida", null)
+                        } else {
+                            result.success(getDocumentName(Uri.parse(uri)))
+                        }
+                    }
+                    "openOutputDocument" -> {
+                        val uri = call.argument<String>("uri")
+                        if (uri.isNullOrBlank()) {
+                            result.error("INVALID_URI", "Arquivo inválido", null)
+                        } else {
+                            openOutputDocument(Uri.parse(uri), result)
+                        }
+                    }
                     "createOutputDocument" -> {
                         val fileName = call.argument<String>("fileName")
                         if (fileName.isNullOrBlank()) {
@@ -73,6 +89,30 @@ class MainActivity : FlutterActivity() {
                 "Não foi possível criar o arquivo na pasta selecionada",
                 error.message,
             )
+        }
+    }
+
+    private fun getDocumentName(uri: Uri): String? {
+        contentResolver.query(uri, arrayOf(DocumentsContract.Document.COLUMN_DISPLAY_NAME), null, null, null)
+            ?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    val nameIndex = cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DISPLAY_NAME)
+                    if (nameIndex >= 0) return cursor.getString(nameIndex)
+                }
+            }
+        return null
+    }
+
+    private fun openOutputDocument(uri: Uri, result: MethodChannel.Result) {
+        try {
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, "audio/mpeg")
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            startActivity(Intent.createChooser(intent, "Abrir áudio"))
+            result.success(null)
+        } catch (error: Exception) {
+            result.error("OPEN_FILE_ERROR", "Não foi possível abrir o MP3", error.message)
         }
     }
 
